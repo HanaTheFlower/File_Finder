@@ -1,17 +1,21 @@
 from lib_used import *
 
-#trouve le répertoire /home de l'utilisateur
+# trouve le répertoire /home de l'utilisateur
 dirusr = os.path.expanduser('~')
 
-#def qui cherche un fichier dans tout les dossiers et sous dossier du repertoire /home de l'utilisateur
-#prend en argument le nom du fichier et l'extention
+# def qui cherche un fichier dans tout les dossiers et sous dossier du repertoire /home de l'utilisateur
+# prend en argument le nom du fichier et l'extention
 def search(nom,ext):
     L=[]
+    T=[]
     files = glob.glob(dirusr + '*/**/'+ nom +'.'+ ext, recursive = True)
     for file in files:
         #print(file)
         L.append(file)
-    return L
+
+    for n in range(len(L)):
+        T.append([L[n] + " | Last Modification : " + time.ctime(os.path.getmtime(L[n]))])
+    return T
 
 class MyWindow(QMainWindow):
 
@@ -19,8 +23,8 @@ class MyWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.setWindowTitle("File Finder")
         self.setWindowIcon(QIcon("icons/file.png"))
-        #largeur de la fenetre
-        self.resize(620, 550)
+        # largeur de la fenetre
+        self.resize(1200, 800)
         self.execute()
 
     def bouton_fermer(self):
@@ -30,16 +34,17 @@ class MyWindow(QMainWindow):
         file = self.filetxt.text()
         ext = self.exttxt.text()
 
-        #met la resultat de search dans une liste
+        # met la resultat de search dans une liste
         L=search(file, ext)
         a = ""
-
-        #boucle forme une  variable a en ajoutant chaque chemin de fichier avec un saut de ligne les un après les autres.
+        x=0
+        # boucle forme une  variable a en ajoutant chaque chemin de fichier avec un saut de ligne les un après les autres.
         for dir in L:
-            a = a + dir + "\n"
+            a = a + dir[x] + "\n\n"
             #print(dir)
         self.rtxt.setPlainText(a)
         self.rtxt.isReadOnly()
+        x=x+1
 
     def execute(self):
 
@@ -47,8 +52,7 @@ class MyWindow(QMainWindow):
         # On crÃ©e une instance que l'on va mettre a centre de la fenÃªtre.
         centralArea = QWidget()
 
-        #position par rapport a gauche, position verticale, taille de la case en longeur, taille de la case en horizontale
-
+        # position par rapport a gauche, position verticale, taille de la case en longeur, taille de la case en horizontale
         # On injecte ce widget en tant que zone centrale.
         self.setCentralWidget(centralArea)
         label = QLabel("Nom du fichier : ", centralArea)
@@ -66,14 +70,14 @@ class MyWindow(QMainWindow):
         button2.clicked.connect(self.bouton_chercher)
 
         button = QPushButton("Fermer",centralArea)
-        button.setGeometry(10, 500, 60, 30)
+        button.setGeometry(10, 750, 60, 30)
         button.clicked.connect(self.bouton_fermer)
 
-        #zone d'affichage de texte
+        # zone d'affichage de texte
         label = QLabel("Finded : ", centralArea)
         label.setGeometry(10, 125, 135, 30)
         self.rtxt = QTextEdit("",centralArea)
-        self.rtxt.setGeometry(10, 165, 600, 300)
+        self.rtxt.setGeometry(10, 165, 1080, 530)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
